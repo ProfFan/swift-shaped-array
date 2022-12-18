@@ -22,6 +22,10 @@ public struct ShapedArray<Scalar>: _ShapedArrayProtocol {
     
     /// The dimensions of the array.
     public private(set) var shape: [Int]
+
+    /// An internal marker to identify scalar zero tensors, for use in optimizations.
+    @usableFromInline
+    internal var _isScalarZero = false
     
     /// Creates a `ShapedArray` from a `ShapedArrayBuffer` and a shape.
     internal init(buffer: __owned [Scalar], shape: __owned [Int]) {
