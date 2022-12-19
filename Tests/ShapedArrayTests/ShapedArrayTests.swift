@@ -1,4 +1,6 @@
 import XCTest
+import _Differentiation
+
 @testable import ShapedArray
 
 final class ShapedArrayTests: XCTestCase {
@@ -92,5 +94,41 @@ final class ShapedArrayTests: XCTestCase {
         ]
         
         XCTAssertEqual(a.shape, [3, 2, 3])
+    }
+
+    func testShapedArrayDifferentiable() {
+        let a: ShapedArray<Double> = [
+            [1, 2, 3], [4, 5, 6],
+            [1, 2, 3], [4, 5, 6],
+            [1, 2, 3], [4, 5, 6]
+        ]
+
+        let pullback = pullback(at: a, of: {x in x + x})
+        let grad = pullback(ShapedArray.init(repeating: 1, shape: [6, 3]))
+        XCTAssertEqual(grad.scalars, Array(repeating: 2.0, count: 18))
+    }
+
+    func testShapedArrayDifferentiableFloat() {
+        let a: ShapedArray<Float> = [
+            [1, 2, 3], [4, 5, 6],
+            [1, 2, 3], [4, 5, 6],
+            [1, 2, 3], [4, 5, 6]
+        ]
+
+        let pullback = pullback(at: a, of: {x in x + x + x})
+        let grad = pullback(ShapedArray.init(repeating: 1, shape: [6, 3]))
+        XCTAssertEqual(grad.scalars, Array(repeating: 3.0, count: 18))
+    }
+
+    func testShapedArrayMultiplyDifferentiableFloat() {
+        let a: ShapedArray<Float> = [
+            [1, 2, 3], [4, 5, 6],
+            [1, 2, 3], [4, 5, 6],
+            [1, 2, 3], [4, 5, 6]
+        ]
+
+        let pullback = pullback(at: a, of: {x in x * x * x})
+        let grad = pullback(ShapedArray.init(repeating: 2, shape: [6, 3]))
+        XCTAssertEqual(grad.scalars, Array(repeating: 2.0, count: 18))
     }
 }
