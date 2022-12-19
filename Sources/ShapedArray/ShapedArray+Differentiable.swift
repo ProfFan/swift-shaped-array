@@ -5,6 +5,23 @@ extension ShapedArray: Differentiable where Scalar: Differentiable & AdditiveAri
 }
 
 extension ShapedArray where Scalar: Differentiable & FloatingPoint {
+    @inlinable
+    @differentiable(reverse, wrt: self)
+    public func reshaped(toShape newShape: [Int]) -> ShapedArray {
+        .init(shape: newShape, scalars: self.scalars)
+    }
+
+    @inlinable
+    @derivative(of: reshaped)
+    func _vjpReshaped(toShape newShape: [Int]) -> (
+        value: ShapedArray, pullback: (ShapedArray) -> ShapedArray
+    ) {
+        let value = reshaped(toShape: newShape)
+        return (value, { [shape = self.shape] v in v.reshaped(toShape: shape) })
+    }
+}
+
+extension ShapedArray where Scalar: Differentiable & FloatingPoint {
     @differentiable(reverse, wrt: (lhs, rhs))
     public static func * (_ lhs: Self, _ rhs: Self) -> Self {
         var result = lhs
