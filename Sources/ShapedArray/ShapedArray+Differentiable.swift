@@ -29,6 +29,7 @@ extension ShapedArray where Scalar: Differentiable & FloatingPoint {
         return result
     }
 
+    /// NOTE(fan): this is obviously incorrect
     @differentiable(reverse)
     public static func *= (_ lhs: inout Self, _ rhs: Self) {
         if lhs._isScalarZero {
